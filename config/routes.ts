@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -29,6 +29,12 @@
 		name: 'About',
 		component: './TienIch/GioiThieu',
 		hideInMenu: true,
+	},
+	{
+		path: '/orders',
+		name: 'Quản lý đơn hàng',
+		component: './Orders',
+		icon: 'ShoppingCartOutlined',
 	},
 	{
 		path: '/random-user',
@@ -72,6 +78,31 @@
 		],
 		layout: false,
 		hideInMenu: true,
+	},
+	{
+		name: 'TienIch',
+		path: '/tien-ich',
+		icon: 'AppstoreOutlined',
+		routes: [
+			{
+				path: '/tien-ich/learning-tracker',
+				name: 'LearningTracker',
+				component: './TienIch/LearningTracker',
+				icon: 'BookOutlined',
+			},
+			{
+				path: '/tien-ich/number-game',
+				name: 'NumberGame',
+				component: './TienIch/NumberGame',
+				icon: 'NumberOutlined',
+			},
+			{
+				path: '/tien-ich/gioi-thieu',
+				name: 'About',
+				component: './TienIch/GioiThieu',
+				hideInMenu: true,
+			},
+		],
 	},
 	{
 		path: '/',
