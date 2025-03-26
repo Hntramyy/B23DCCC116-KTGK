@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export type OrderStatus = 'pending' | 'shipping' | 'completed' | 'cancelled';
 
@@ -47,7 +47,7 @@ const mockCustomers: ICustomer[] = [
   { id: 'C5', name: 'Hoàng Văn Em', phone: '0901234571' },
 ];
 
-const mockOrders: IOrder[] = [
+const initialOrders: IOrder[] = [
   {
     id: 'ORD001',
     customerId: 'C1',
@@ -106,37 +106,39 @@ const mockOrders: IOrder[] = [
 export default () => {
   const [orders, setOrders] = useState<IOrder[]>(() => {
     const savedOrders = localStorage.getItem('orders');
-    return savedOrders ? JSON.parse(savedOrders) : mockOrders;
+    return savedOrders ? JSON.parse(savedOrders) : initialOrders;
   });
 
+  // Save orders to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders]);
+
   const addOrder = (order: Omit<IOrder, 'id'>) => {
-    const newOrder = {
+    const newOrder: IOrder = {
       ...order,
-      id: `ORD${Date.now()}`,
+      id: `ORD${String(orders.length + 1).padStart(3, '0')}`,
     };
-    const updatedOrders = [newOrder, ...orders];
-    setOrders(updatedOrders);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    setOrders([...orders, newOrder]);
+    return newOrder;
   };
 
   const updateOrder = (orderId: string, updatedOrder: Partial<IOrder>) => {
-    const updatedOrders = orders.map((order) =>
-      order.id === orderId ? { ...order, ...updatedOrder } : order
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    const orderIndex = orders.findIndex((order) => order.id === orderId);
+    if (orderIndex === -1) return false;
+
+    const newOrders = [...orders];
+    newOrders[orderIndex] = { ...newOrders[orderIndex], ...updatedOrder };
+    setOrders(newOrders);
+    return true;
   };
 
   const cancelOrder = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (order && order.status === 'pending') {
-      updateOrder(orderId, { status: 'cancelled' });
-      return true;
-    }
-    return false;
+    return updateOrder(orderId, { status: 'cancelled' });
   };
 
   const getProducts = () => mockProducts;
+
   const getCustomers = () => mockCustomers;
 
   return {
